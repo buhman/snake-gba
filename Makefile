@@ -9,6 +9,8 @@ LD = $(TARGET)ld
 OBJCOPY = $(TARGET)objcopy
 OBJDUMP = $(TARGET)objdump
 
+OBJS = header.o main.o
+
 all: snake.gba
 
 %.o: %.S
@@ -23,8 +25,8 @@ all: snake.gba
 %.lds: %.ld
 	$(CC) -E -P -x c $< -o $@
 
-snake.elf: header.o gba.lds
-	$(LD) -T gba.lds $< -o $@
+snake.elf: $(OBJS) | gba.lds
+	$(LD) -T gba.lds $^ -o $@
 
 snake.gba: snake.elf
 	$(OBJCOPY) -O binary $< $@

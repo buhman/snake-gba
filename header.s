@@ -14,5 +14,3 @@
         .byte 0x0      /* Mask ROM Version Number */
         .byte 0x51     /* Complement Check */
         .fill 2,1,0x0  /* Reserved Area */
-main:
-        b main

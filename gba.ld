@@ -20,5 +20,6 @@ SECTIONS
     KEEP(*(.rom.start_addr))
     KEEP(*(.rom.nintendo_logo))
     KEEP(*(.rom.header))
+    *(*.text)
   } > gprom
 }
