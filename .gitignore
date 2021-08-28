@@ -1,0 +1,5 @@
+*.elf
+*.lds
+*.sav
+*.o
+*.gba
