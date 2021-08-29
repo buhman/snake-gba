@@ -40,6 +40,12 @@ a.out:
 clean:
 	rm -f *.o *.out *.hex *.elf
 
+deploy:
+	mount /dev/sdc1 /mnt
+	cp snake.gba /mnt
+	umount /mnt
+	sync
+
 .SUFFIXES:
 .INTERMEDIATE:
 .PHONY: all clean dump
