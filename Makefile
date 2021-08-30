@@ -9,9 +9,12 @@ LD = $(TARGET)ld
 OBJCOPY = $(TARGET)objcopy
 OBJDUMP = $(TARGET)objdump
 
-OBJS = header.o main.o
+OBJS = header.o main.o glyph.o minmin.o text.o
+OBJS += ../aoc2020-gba/day1/day1.a
 
 all: snake.gba
+
+glyph.o: font.s
 
 %.o: %.S
 	$(CC) $(ARCH) $(ASFLAGS) -c $< -o $@
@@ -20,10 +23,13 @@ all: snake.gba
 	$(AS) $(ARCH) $(ASFLAGS) $< -o $@
 
 %.o: %.c
-	$(CC) $(ARCH) $(CFLAGS) $< -o $@
+	$(CC) $(ARCH) $(CFLAGS) -c $< -o $@
 
 %.lds: %.ld
 	$(CC) -E -P -x c $< -o $@
+
+%.elf: %.o
+	$(LD) $^ -o $@
 
 snake.elf: $(OBJS) | gba.lds
 	$(LD) -T gba.lds $^ -o $@

@@ -3,3 +3,7 @@
 *.sav
 *.o
 *.gba
+*.data
+*.data.pal
+*.raw
+*.bin

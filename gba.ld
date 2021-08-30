@@ -6,10 +6,8 @@ OUTPUT_ARCH(arm)
 MEMORY
 {
   gprom : ORIGIN = GPROM, LENGTH = 32M
-  /*
   iwram : ORIGIN = IWRAM, LENGTH = 32K
   ewram : ORIGIN = EWRAM, LENGTH = 256K
-  */
 }
 
 SECTIONS

@@ -11,8 +11,9 @@
 #define PRAM_BG_END  0x50001ff
 #define PRAM_BG      0x5000000
 #define IO_REG    0x4000000
-#define IWRAM_END 0x3007fff
-#define IWRAM     0x3000000
+#define IWRAM_END    0x3007fff
+#define IWRAM_SYSTEM 0x3007f00
+#define IWRAM        0x3000000
 #define EWRAM_END 0x203ffff
 #define EWRAM     0x2000000
 #define SROM_END  0x0003fff
