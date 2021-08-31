@@ -33,28 +33,24 @@ minmin_ret:
         mov r0, #VRAM
         add r0, r0, #0xf000 /* screen base block 30 */
         add r1, r0, #0x800
-        mov r2, #0x100
+        mov r2, #0x10
         orr r2, r2, #SCREEN_TEXT_PALETTE(1)
 _fill_loop:
         strh r2, [r0], #2
         cmp r0, r1
         bne _fill_loop
 
-        /* aoc2020 part1 */
-        add sp, sp, #16384
-        bl day1_part1
-        mov r10, r0
-        add sp, sp, #-16384
-
         /* screen */
+        /*
         mov r0, #VRAM
-        add r0, r0, #0xf000 /* screen base block 30 */
+        add r0, r0, #0xf000 /* screen base block 30 /
         mov r1, #SCREEN_TEXT_PALETTE(1)
         ldr r2, =#0xda1
         bl draw_base16
         add r0, r0, #2
         mov r2, r10
         bl draw_base16
+        */
 
         /* set text mode */
         mov r0, #IO_REG
@@ -84,25 +80,34 @@ int:
 
         /* enable int */
         ldr r0, =#0x3007ffc
-        ldr r1, =_input_isr
+        ldr r1, =sound_isr
         str r1, [r0]
 
         mov r0, #IO_REG
-        mov r1, #DISPSTAT__V_BLANK_INT_ENABLE
-        str r1, [r0, #DISPSTAT]
+        mov r1, #160
+        lsl r1, r1, #8
+        /*orr r1, r1, #DISPSTAT__V_COUNT_INT_ENABLE*/
+        orr r1, r1, #DISPSTAT__V_BLANK_INT_ENABLE
+        strh r1, [r0, #DISPSTAT]
 
+        mov r1, #0
+        /*orr r1, r1, #IE__RENDER_BLANK_V*/
+        /*orr r1, r1, #IE__V_COUNTER_MATCH*/
+        orr r1, r1, #IE__TIMER_1
+        mov r2, #IE
+        strh r1, [r0, r2]
 
-        mov r1, #IE__RENDER_BLANK_V
-        /*orr r1, r1, #IE__KEY*/
-        str r1, [r0, #IE]
+        mov r1, #(KEYCNT__ALL_KEYS + 1)
+        sub r1, r1, #1
+        orr r1, r1, #KEYCNT__INT_ENABLE
+        ldr r2, =#KEYCNT
+        strh r1, [r0, r2]
 
-        /*
-        mov r1, #KEYCNT__INT_ENABLE
-        str r1, [r0, #KEYCNT]
-        */
+        mov r1, #IME
+        mov r2, #IME__INT_MASTER_ENABLE
+        strh r2, [r0, r1]
 
-        mov r1, #IME__INT_MASTER_ENABLE
-        str r1, [r0, #IME]
+        b sound
 
 _stop:
         b _stop
@@ -112,28 +117,30 @@ _stop:
 
 _input_isr:
         mov r0, #IO_REG
-        add r5, r0, #KEY_INPUT
-        ldr r1, [r5]
-        ands r3, r1, r2, LSL #KEY_INPUT__RIGHT
+        mov r1, #KEY_INPUT
+        ldrh r2, [r0, r1]
+        mov r1, #1
+        ands r3, r2, r1, LSL #KEY_INPUT__RIGHT
         addeq r10, r10, #1
-        ands r3, r1, r2, LSL #KEY_INPUT__LEFT
+        ands r3, r2, r1, LSL #KEY_INPUT__LEFT
         addeq r10, r10, #-1
-        ands r3, r1, r2, LSL #KEY_INPUT__UP
+        ands r3, r2, r1, LSL #KEY_INPUT__UP
         addeq r11, r11, #-1
-        ands r3, r1, r2, LSL #KEY_INPUT__DOWN
+        ands r3, r2, r1, LSL #KEY_INPUT__DOWN
         addeq r11, r11, #1
-        ands r3, r1, r2, LSL #KEY_INPUT__L
+        ands r3, r2, r1, LSL #KEY_INPUT__L
         addeq r9, r9, #-1
-        ands r3, r1, r2, LSL #KEY_INPUT__R
+        ands r3, r2, r1, LSL #KEY_INPUT__R
         addeq r9, r9, #1
 
-        asr r1, r10, #8
-        strh r1, [r0, #BG1HOFS]
+        strh r10, [r0, #BG1HOFS]
+        strh r11, [r0, #BG1VOFS]
+        strh r9, [r0, #BG0VOFS]
 
-        asr r2, r11, #8
-        strh r2, [r0, #BG1VOFS]
-
-        asr r2, r9, #8
-        strh r2, [r0, #BG0VOFS]
+        /* clear interrupt */
+        mov r1, #(IF - 2)
+        add r1, r1, #2
+        mov r2, #IE__RENDER_BLANK_V
+        strh r2, [r0, r1]
 
         bx lr

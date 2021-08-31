@@ -9,8 +9,8 @@ LD = $(TARGET)ld
 OBJCOPY = $(TARGET)objcopy
 OBJDUMP = $(TARGET)objdump
 
-OBJS = header.o main.o glyph.o minmin.o text.o
-OBJS += ../aoc2020-gba/day1/day1.a
+OBJS = header.o main.o glyph.o minmin.o text.o sound.o
+#OBJS += ../aoc2020-gba/day1/day1.a
 
 all: snake.gba
 

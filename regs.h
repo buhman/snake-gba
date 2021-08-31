@@ -1,6 +1,8 @@
 /* 4 LCD Status */
 #define DISPSTAT 0x004
 #define DISPSTAT__V_BLANK_INT_ENABLE (1 << 3)
+#define DISPSTAT__H_BLANK_INT_ENABLE (1 << 4)
+#define DISPSTAT__V_COUNT_INT_ENABLE (1 << 5)
 #define VCOUNT 0x006
 
 /* 5 Image System */
@@ -67,6 +69,7 @@
 #define KEY_INPUT__R   9
 
 #define KEYCNT 0x132
+#define KEYCNT__ALL_KEYS 0x3ff
 #define KEYCNT__INT_ENABLE (1 << 14)
 
 /* 15 Interrupt Control */
@@ -90,3 +93,89 @@
 #define IE__GAME_PAK        (1 << 13)
 
 #define IF  0x202
+
+#define SOUND1_CNT_L 0x060
+#define SOUND1_CNT_L__SWEEP_TIME_OFF 0
+#define SOUND1_CNT_L__SWEEP_TIME(n) (n << 4)
+#define SOUND1_CNT_L__SWEEP_DECREASE (1 << 3)
+#define SOUND1_CNT_L__SWEEP_SHIFTS(n) (n << 0)
+
+#define SOUND1_CNT_H 0x062
+#define SOUND1_CNT_H__ENVELOPE_VALUE(n) (n << 12)
+#define SOUND1_CNT_H__ENVELOPE_AMPLIFY (1 << 11)
+#define SOUND1_CNT_H__ENVELOPE_STEPS(n) (n << 8)
+#define SOUND1_CNT_H__DUTY_CYCLE(n) (n << 6)
+#define SOUND1_CNT_H__SOUND_LENGTH(n) (n << 0)
+
+#define SOUND1_CNT_X 0x064
+#define SOUND1_CNT_X__RESTART (1 << 15)
+#define SOUND1_CNT_X__SOUND_LENGTH (1 << 14)
+#define SOUND1_CNT_X__FREQUENCY_DATA(n) (n << 0)
+
+#define SOUND2_CNT_L 0x68
+#define SOUND2_CNT_L__ENVELOPE_VALUE(n) (n << 12)
+#define SOUND2_CNT_L__ENVELOPE_AMPLIFY (1 << 11)
+#define SOUND2_CNT_L__ENVELOPE_STEPS(n) (n << 8)
+#define SOUND2_CNT_L__DUTY_CYCLE(n) (n << 6)
+#define SOUND2_CNT_L__SOUND_LENGTH(n) (n << 0)
+
+#define SOUND2_CNT_H 0x06c
+#define SOUND2_CNT_H__RESTART (1 << 15)
+#define SOUND2_CNT_H__SOUND_LENGTH (1 << 14)
+#define SOUND2_CNT_H__FREQUENCY_DATA(n) (n << 0)
+
+#define SOUND4_CNT_L 0x78
+#define SOUND4_CNT_L__ENVELOPE_VALUE(n) (n << 12)
+#define SOUND4_CNT_L__ENVELOPE_AMPLIFY (1 << 11)
+#define SOUND4_CNT_L__ENVELOPE_STEPS(n) (n << 8)
+#define SOUND4_CNT_L__SOUND_LENGTH(n) (n << 0)
+
+#define SOUND4_CNT_H 0x07c
+#define SOUND4_CNT_H__RESTART (1 << 15)
+#define SOUND4_CNT_H__SOUND_LENGTH (1 << 14)
+#define SOUND4_CNT_H__COUNTER_SHIFT_FREQ(n) (n << 4)
+#define SOUND4_CNT_H__COUNTER_7_STEP (1 << 3)
+#define SOUND4_CNT_H__COUNTER_PRESCALAR(n) (n << 0)
+
+#define SOUNDCNT_L 0x080
+#define SOUNDCNT_L__OUTPUT_1_L (1 << 12)
+#define SOUNDCNT_L__OUTPUT_2_L (1 << 13)
+#define SOUNDCNT_L__OUTPUT_3_L (1 << 14)
+#define SOUNDCNT_L__OUTPUT_4_L (1 << 15)
+#define SOUNDCNT_L__OUTPUT_1_R (1 << 8)
+#define SOUNDCNT_L__OUTPUT_2_R (1 << 9)
+#define SOUNDCNT_L__OUTPUT_3_R (1 << 10)
+#define SOUNDCNT_L__OUTPUT_4_R (1 << 11)
+#define SOUNDCNT_L__OUTPUT_LEVEL_L(n) (n << 4)
+#define SOUNDCNT_L__OUTPUT_LEVEL_R(n) (n << 0)
+
+#define SOUNDCNT_H 0x082
+#define SOUNDCNT_H__OUTPUT_RATIO_QUARTER (0)
+#define SOUNDCNT_H__OUTPUT_RATIO_HALF (1)
+#define SOUNDCNT_H__OUTPUT_RATIO_FULL (2)
+
+#define SOUNDCNT_X 0x084
+#define SOUNDCNT_X__ENABLE (1 << 7)
+#define SOUNDCNT_X__ENABLE_1 (1 << 0)
+#define SOUNDCNT_X__ENABLE_2 (1 << 1)
+#define SOUNDCNT_X__ENABLE_3 (1 << 2)
+#define SOUNDCNT_X__ENABLE_4 (1 << 3)
+
+/* timers */
+
+#define TM0CNT_L 0x100
+#define TM1CNT_L 0x104
+#define TM2CNT_L 0x108
+#define TM3CNT_L 0x10c
+
+#define TM0CNT_H 0x102
+#define TM1CNT_H 0x106
+#define TM2CNT_H 0x10a
+#define TM3CNT_H 0x10e
+#define TM_CNT_H__ENABLE (1 << 7)
+#define TM_CNT_H__INT_ENABLE (1 << 6)
+#define TM_CNT_H__COUNT_UP (1 << 2)
+#define TM_CNT_H__PRESCALAR_1 (0)
+#define TM_CNT_H__PRESCALAR_64 (1)
+#define TM_CNT_H__PRESCALAR_256 (2)
+#define TM_CNT_H__PRESCALAR_1024 (3)
