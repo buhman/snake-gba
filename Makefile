@@ -12,6 +12,8 @@ OBJDUMP = $(TARGET)objdump
 OBJS = header.o main.o glyph.o minmin.o text.o sound.o
 #OBJS += ../aoc2020-gba/day1/day1.a
 
+OBJS2 = header.o main2.o tile.o palette.o screen.o dma.o snake.o input.o arrow.o
+
 all: snake.gba
 
 glyph.o: font.s
@@ -29,26 +31,26 @@ glyph.o: font.s
 	$(CC) -E -P -x c $< -o $@
 
 %.elf: %.o
-	$(LD) $^ -o $@
+	$(LD) $< -o $@
+
+snake2.elf: $(OBJS2) | gba.lds
+	$(LD) -T gba.lds $^ -o $@
 
 snake.elf: $(OBJS) | gba.lds
 	$(LD) -T gba.lds $^ -o $@
 
-snake.gba: snake.elf
+%.gba: %.elf
 	$(OBJCOPY) -O binary $< $@
 
 dump:
 	arm-none-eabi-objdump -D -j .text $(F)
 
-a.out:
-	$(LD) $^ -o $@
-
 clean:
 	rm -f *.o *.out *.hex *.elf
 
-deploy:
+deploy: snake2.gba
 	mount /dev/sdc1 /mnt
-	cp snake.gba /mnt
+	cp $< /mnt/00.gba
 	umount /mnt
 	sync
 

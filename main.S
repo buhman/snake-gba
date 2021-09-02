@@ -1,7 +1,6 @@
 #include "base.h"
 #include "regs.h"
 #include "color.h"
-#include "screen.h"
 
         .section .text
         .global main
@@ -41,16 +40,14 @@ _fill_loop:
         bne _fill_loop
 
         /* screen */
-        /*
         mov r0, #VRAM
-        add r0, r0, #0xf000 /* screen base block 30 /
+        add r0, r0, #0xf000 /* screen base block 30 */
         mov r1, #SCREEN_TEXT_PALETTE(1)
         ldr r2, =#0xda1
         bl draw_base16
         add r0, r0, #2
         mov r2, r10
         bl draw_base16
-        */
 
         /* set text mode */
         mov r0, #IO_REG
@@ -107,6 +104,9 @@ int:
         mov r2, #IME__INT_MASTER_ENABLE
         strh r2, [r0, r1]
 
+        mov r9, #16
+        strh r9, [r0, #BG0VOFS]
+
         b sound
 
 _stop:
@@ -140,7 +140,7 @@ _input_isr:
         /* clear interrupt */
         mov r1, #(IF - 2)
         add r1, r1, #2
-        mov r2, #IE__RENDER_BLANK_V
+        mov r2, #IE__V_BLANK
         strh r2, [r0, r1]
 
         bx lr

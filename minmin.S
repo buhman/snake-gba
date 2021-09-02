@@ -1,6 +1,5 @@
 #include "regs.h"
 #include "base.h"
-#include "screen.h"
 
         .section .text
         .global minmin
@@ -88,7 +87,7 @@ _cs_loop:
 
         /* data */
 __palette_start:
-        .include "palette.s"
+        .include "minmin_palette.s"
 __palette_end:
 
 __tiles_start:

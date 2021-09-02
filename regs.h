@@ -55,6 +55,11 @@
 #define BG3HOFS 0x01c
 #define BG3VOFS 0x01e
 
+/* text screen */
+#define SCREEN_TEXT_PALETTE(n) (n << 12)
+#define SCREEN_TEXT_H_FLIP (1 << 10)
+#define SCREEN_TEXT_V_FLIP (1 << 11)
+
 /* 14 Key Input */
 #define KEY_INPUT 0x130
 #define KEY_INPUT__A   0
@@ -77,8 +82,8 @@
 #define IME__INT_MASTER_ENABLE (1 << 0)
 
 #define IE  0x200
-#define IE__RENDER_BLANK_V  (1 << 0)
-#define IE__RENDER_BLANK_H  (1 << 1)
+#define IE__V_BLANK         (1 << 0)
+#define IE__H_BLANK         (1 << 1)
 #define IE__V_COUNTER_MATCH (1 << 2)
 #define IE__TIMER_0         (1 << 3)
 #define IE__TIMER_1         (1 << 4)
@@ -93,6 +98,8 @@
 #define IE__GAME_PAK        (1 << 13)
 
 #define IF  0x202
+
+/* sound */
 
 #define SOUND1_CNT_L 0x060
 #define SOUND1_CNT_L__SWEEP_TIME_OFF 0
@@ -179,3 +186,30 @@
 #define TM_CNT_H__PRESCALAR_64 (1)
 #define TM_CNT_H__PRESCALAR_256 (2)
 #define TM_CNT_H__PRESCALAR_1024 (3)
+
+/* dma */
+#define DMA0_SAD_L 0x0b0 /* source address */
+#define DMA0_SAD_H 0x0b2
+#define DMA0_DAD_L 0x0b4 /* destination address */
+#define DMA0_DAD_H 0x0b6
+
+#define DMA0_CNT_L 0x0b8 /* word count */
+#define DMA0_CNT_H 0x0ba /* control */
+#define DMA0_CNT_H__ENABLE (1 << 15)
+#define DMA0_CNT_H__INT_ENABLE (1 << 14)
+#define DMA0_CNT_H__START_IMMEDIATE (0 << 12)
+#define DMA0_CNT_H__START_V_BLANK (1 << 12)
+#define DMA0_CNT_H__START_H_BLANK (2 << 12)
+#define DMA0_CNT_H__WORD_16_BIT (0 << 10)
+#define DMA0_CNT_H__WORD_32_BIT (1 << 10)
+#define DMA0_CNT_H__BLANK_REPEAT (1 << 9)
+#define DMA0_CNT_H__SRC_INCREMENT (0 << 7)
+#define DMA0_CNT_H__SRC_DECREMENT (1 << 7)
+#define DMA0_CNT_H__SRC_FIXED (2 << 7)
+#define DMA0_CNT_H__DST_INCREMENT (0 << 5)
+#define DMA0_CNT_H__DST_DECREMENT (1 << 5)
+#define DMA0_CNT_H__DST_FIXED (2 << 5)
+#define DMA0_CNT_H__DST_RELOAD (3 << 5)
+
+/* 16 Power Down */
+#define HALTCNT 0x301
