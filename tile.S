@@ -44,7 +44,7 @@ tile$bits_16:
         mov r8, #1 /* const 1 */
 _next_bit:
         mov r5, #0
-        tsts r8, r3, LSR r4
+        tst r8, r3, LSR r4
         add r4, r4, #1
         movne r5, r1
 

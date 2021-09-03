@@ -213,3 +213,39 @@
 
 /* 16 Power Down */
 #define HALTCNT 0x301
+
+/* 13 UART Communication Functions */
+#define SIODATA8 0x12a
+
+#define SIOCNT 0x128
+#define SIOCNT__INT_ENABLE (1 << 14)
+#define SIOCNT__UART_MODE (0b11 << 12)
+#define SIOCNT__UART_RECV_ENABLE (1 << 11)
+#define SIOCNT__UART_SEND_ENABLE (1 << 10)
+#define SIOCNT__UART_PARITY_ENABLE (1 << 9)
+#define SIOCNT__UART_FIFO_ENABLE (1 << 8)
+#define SIOCNT__UART_DATA_8BIT (1 << 7)
+#define SIOCNT__UART_ERROR 6
+#define SIOCNT__UART_RECV_EMPTY 5
+#define SIOCNT__UART_SEND_FULL 4
+#define SIOCNT__UART_PARITY_ODD (1 << 3)
+#define SIOCNT__UART_CTS_ENABLE (1 << 2)
+#define SIOCNT__BAUD_RATE_9600 (0b00 << 0)
+#define SIOCNT__BAUD_RATE_38400 (0b01 << 0)
+#define SIOCNT__BAUD_RATE_57600 (0b10 << 0)
+#define SIOCNT__BAUD_RATE_115200 (0b11 << 0)
+
+/* 13.4 General Purpose Communication */
+#define RCNT 0x134
+#define RCNT__SERIAL_ENABLE (0b00 << 14)
+#define RCNT__GPIO (0b10 << 14)
+#define RCNT__JOYBUS (0b11 << 14)
+#define RCNT__INT_ENABLE (1 << 8)
+#define RCNT__SO_OUTPUT_ENABLE (1 << 7)
+#define RCNT__SI_OUTPUT_ENABLE (1 << 6)
+#define RCNT__SD_OUTPUT_ENABLE (1 << 5)
+#define RCNT__SC_OUTPUT_ENABLE (1 << 4)
+#define RCNT__SO_DATA 3
+#define RCNT__SI_DATA 2
+#define RCNT__SD_DATA 1
+#define RCNT__SC_DATA 0
