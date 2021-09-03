@@ -11,7 +11,6 @@ snake$init:
 
         .irp i, 1, 2, 3, 4, 5, 6, 7, 8
         mov r\i, #0
-        mov r\i, r1
         .endr
 _init_loop:
         stmia r0!, {r1 - r8}
@@ -19,31 +18,26 @@ _init_loop:
         bne _init_loop
 
         /* r0: head address */
-        sub r2, r0, #(GRID_SIZE - 16)
-        str r2, [r0], #4
+        /*#(GRID_SIZE / 2)*/
+        sub r2, r0, #(GRID_SIZE)
+        add r2, r2, #300
+        str r2, [r0]
         mov r1, #TYPE_SNAKE
         strb r1, [r2]
         /* r0: tail address */
-        sub r2, r2, #15
-        str r2, [r0], #4
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
-        strb r1, [r2], #1
+        str r2, [r0, #4]
 
-        mov r3, #4
-        strb r3, [r1]
+        /* xorshift state */
+        mov r2, #0
+        add r2, r2, #-1
+        str r2, [r0, #8]
+
+        /* snake_length */
+        mov r2, #0
+        str r2, [r0, #12]
+
+        add r0, r0, #-GRID_SIZE
+        b _place_food
 
         bx lr
 
@@ -98,9 +92,12 @@ snake$update:
           r6 : (old) head/tail offset
 
         temp
-          r2 : x
+          r2 : x / xorshift state value
           r3 : y
-
+          r4 : next_head_offset
+          r5 : next_head_value
+          r6 : head_offset
+          r7 :
         */
 
         /*
@@ -120,10 +117,16 @@ snake$update:
         /* return r1(next dir) r2(x), r3(y), r4(next head offset) */
         GET_NEXT_HEAD
 
-        /* FIXME: collision checking should happen with x/y here */
         cmp r4, r6
-        bxeq lr /* early return if we did not move */
-        /* currently free: r2, r3, r5, r6 */
+        beq _collision_w /* collision with a wall */
+
+        /* check for grid collision at r4 */
+        ldrb r5, [r4, r0]
+        and r5, r5, #0b11 /* cell type */
+        cmp r5, #TYPE_SNAKE
+        beq _collision_s /* collision with a another snake cell */
+
+        /* currently free: r2, r3, r6 */
 
         /* update old_head->head */
         mov r7, #TYPE_SNAKE
@@ -131,12 +134,19 @@ snake$update:
         strb r7, [r8]
 
         /* create new head */
+        /* meh: mask off palette bits from original r7 */
         mov r7, #TYPE_SNAKE
         and r1, r1, #3
         orr r7, r7, r1, LSL #2 /* head dir */
         add r4, r4, r0
         strb r7, [r4]
         str r4, [r9], #4
+
+        /* currently free: r2, r3, r4, r5, r6, r7 */
+
+        cmp r5, #TYPE_FOOD
+        beq _place_food
+        bxeq lr
 
         /*
         tail operations
@@ -166,6 +176,56 @@ snake$update:
 
         bx lr
 
+_place_food:
+        ldr r2, =#(GRID_SIZE + 12)
+        ldrh r1, [r0, r2]
+        add r1, r1, #1
+        strh r1, [r0, r2]
+
+        ldr r3, =#(GRID_SIZE + 8) /* xorshift state */
+        ldr r2, [r0, r3]
+        eor r2, r2, r2, LSR #13
+        eor r2, r2, r2, LSL #17
+        eor r2, r2, r2, LSR #5
+        str r2, [r0, r3]
+
+        /* start start searching for empty cell at r1 */
+
+        lsr r2, r2, #22
+        add r1, r2, r0
+
+        ldr r3, =#((32 * 20) - 2) /* last cell */
+        add r3, r0
+
+        add r1, r1, #-1
+_next_empty_cell:
+        add r1, r1, #1
+_next_empty_cell_ge:
+        sub r8, r1, r0
+        and r7, r8, #0x1f
+        cmp r7, #30
+        addge r1, r1, #2
+
+        cmp r1, r3
+        movge r1, r0
+        addge r1, r1, r2, LSR #1
+        bge _next_empty_cell_ge
+
+        ldrb r4, [r1]
+        and r4, r4, #0b11
+        cmp r4, #TYPE_EMPTY
+        bne _next_empty_cell
+
+_found_empty:
+        mov r2, #TYPE_FOOD
+        strb r2, [r1]
+        bx lr
+
+_collision_w:
+        b _collision_w
+_collision_s:
+        b _collision_s
+
 
         .global snake$render
 snake$render:
@@ -193,18 +253,15 @@ _render_loop:
         moveq r2, #17
         cmp r6, #BEND_DOWN
         moveq r2, #17
-        beq _there
-_here:
         orreq r2, r2, #SCREEN_TEXT_V_FLIP
 
-        cmp r5, #0
+        cmp r5, #TYPE_EMPTY
         moveq r2, #0
+        cmp r5, #TYPE_FOOD
+        moveq r2, #2
 
         strh r2, [r1], #2
         cmp r0, r3
         bne _render_loop
 
         bx lr
-
-_there:
-        b _here

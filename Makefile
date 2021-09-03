@@ -14,7 +14,7 @@ OBJS = header.o main.o glyph.o minmin.o text.o sound.o
 
 OBJS2 = header.o main2.o tile.o palette.o screen.o dma.o snake.o input.o arrow.o
 
-all: snake.gba
+all: 00-snake2.gba
 
 glyph.o: font.s
 
@@ -33,10 +33,10 @@ glyph.o: font.s
 %.elf: %.o
 	$(LD) $< -o $@
 
-snake2.elf: $(OBJS2) | gba.lds
+00-snake2.elf: $(OBJS2) | gba.lds
 	$(LD) -T gba.lds $^ -o $@
 
-snake.elf: $(OBJS) | gba.lds
+00-snake.elf: $(OBJS) | gba.lds
 	$(LD) -T gba.lds $^ -o $@
 
 %.gba: %.elf
@@ -48,9 +48,9 @@ dump:
 clean:
 	rm -f *.o *.out *.hex *.elf
 
-deploy: snake2.gba
+deploy: 00-snake2.gba
 	mount /dev/sdc1 /mnt
-	cp $< /mnt/00.gba
+	cp $< /mnt/$<
 	umount /mnt
 	sync
 

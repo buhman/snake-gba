@@ -88,7 +88,7 @@ _loop:
 
         mov r0, #IO_REG
         mov r1, #TM1CNT_L
-        ldr r2, =#-8192
+        ldr r2, =#-4096
         strh r2, [r0, r1]
 
         ldr r1, =#TM1CNT_H
@@ -108,8 +108,9 @@ _loop:
         mov r2, #IME__INT_MASTER_ENABLE
         strh r2, [r0, r1]
 
-        /* allocate (GRID_SIZE + head + tail) from sp */
-        ldr r1, =#-(GRID_SIZE + 4 + 4)
+        /* allocate (GRID_SIZE + head + tail + xorshift + snake_len from sp */
+        /*                       0      4      8          12                */
+        ldr r1, =#-(GRID_SIZE + 4 + 4 + 4 + 4)
         add sp, sp, r1
         mov r0, sp
         bl snake$init
