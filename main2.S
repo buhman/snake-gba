@@ -1,6 +1,7 @@
 #include "base.h"
 #include "regs.h"
 #include "snake.h"
+#include "input.h"
 
         .section .text
         .global main
@@ -167,13 +168,15 @@ _update:
         /* r1 dir */
         mov r0, r11
         mov r1, r3
-        /*bl snake$update*/
+        bl snake$update
 
         b _isr_return
 
 _update_dir:
         mov r0, r11
         mov r1, r3
+        cmp r1, #DIR_NONE
+        beq _isr_return
         bl snake$update_dir
 
 _isr_return:

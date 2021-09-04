@@ -49,7 +49,7 @@ clean:
 	rm -f *.o *.out *.hex *.elf
 
 deploy: 00-snake2.gba
-	mount /dev/sdc1 /mnt
+	mount /dev/disk/by-label/GBA /mnt
 	cp $< /mnt/$<
 	umount /mnt
 	sync
