@@ -51,6 +51,14 @@ _loop:
         bne _loop
         */
 
+        /* allocate (GRID_SIZE + head + tail + xorshift + snake_len from sp */
+        /*                       0      4      8          12                */
+        ldr r1, =#-(GRID_SIZE + 4 + 4 + 4 + 4)
+        add sp, sp, r1
+        mov r0, sp
+        bl snake$init
+        mov r11, sp
+
         /*
         BG modes
         */
@@ -98,9 +106,25 @@ _loop:
         orr r2, r2, #TM_CNT_H__PRESCALAR_1024
         strh r2, [r0, r1]
 
+        ldr r1, =#KEYCNT
+        mov r2, #0
+        orr r2, r2, #KEYCNT_INPUT__RIGHT
+        orr r2, r2, #KEYCNT_INPUT__LEFT
+        orr r2, r2, #KEYCNT_INPUT__UP
+        orr r2, r2, #KEYCNT_INPUT__DOWN
+        orr r2, r2, #KEYCNT__INT_ENABLE
+        strh r2, [r0, r1]
+
         mov r0, #IO_REG
         mov r1, #IE
-        mov r2, #IE__TIMER_1
+        mov r2, #0
+        orr r2, r2, #IE__TIMER_1
+        orr r2, r2, #IE__KEY
+        strh r2, [r0, r1]
+
+        ldr r1, =#IF
+        mov r2, #0
+        add r2, r2, #-1
         strh r2, [r0, r1]
 
         mov r0, #IO_REG
@@ -108,42 +132,57 @@ _loop:
         mov r2, #IME__INT_MASTER_ENABLE
         strh r2, [r0, r1]
 
-        /* allocate (GRID_SIZE + head + tail + xorshift + snake_len from sp */
-        /*                       0      4      8          12                */
-        ldr r1, =#-(GRID_SIZE + 4 + 4 + 4 + 4)
-        add sp, sp, r1
-        mov r0, sp
-        bl snake$init
-        mov r11, sp
-
 _forever:
         mov r0, #IO_REG
         ldr r1, =#HALTCNT
         mov r2, #0
-        strb r2, [r0, r1]
+        /*strb r2, [r0, r1]*/
         b _forever
 
 _user_isr:
         mov r0, #IO_REG
-        ldr r1, =#IF
-        mov r2, #IE__TIMER_1
+        mov r1, #IME
+        mov r2, #0
         strh r2, [r0, r1]
 
         mov r12, lr
-
-        /* r11: grid base address */
 
         /*
         input poll
         */
         bl input$poll /* return r1: dir */
+        mov r3, r1
 
+        mov r0, #IO_REG
+        ldr r1, =#IF
+        ldrh r2, [r0, r1]
+        tst r2, #IE__KEY
+        bne _update_dir
+
+_update:
         /*
         update
         */
-        mov r0, r11
+        /* r11: grid base address */
         /* r1 dir */
-        bl snake$update
+        mov r0, r11
+        mov r1, r3
+        /*bl snake$update*/
+
+        b _isr_return
+
+_update_dir:
+        mov r0, r11
+        mov r1, r3
+        bl snake$update_dir
+
+_isr_return:
+        mov r0, #IO_REG
+        ldr r1, =#IF
+        mov r2, #0
+        orr r2, #IE__KEY
+        orr r2, #IE__TIMER_1
+        strh r2, [r0, r1]
 
         /*
         render
@@ -162,4 +201,10 @@ _user_isr:
         bl dma0$transfer
 
         mov lr, r12
+
+        mov r0, #IO_REG
+        mov r1, #IME
+        mov r2, #IME__INT_MASTER_ENABLE
+        strh r2, [r0, r1]
+
         bx lr

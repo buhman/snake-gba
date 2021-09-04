@@ -75,6 +75,17 @@
 
 #define KEYCNT 0x132
 #define KEYCNT__ALL_KEYS 0x3ff
+#define KEYCNT_INPUT__A   (1 << 0)
+#define KEYCNT_INPUT__B   (1 << 1)
+#define KEYCNT_INPUT__SL  (1 << 2)
+#define KEYCNT_INPUT__ST  (1 << 3)
+#define KEYCNT_INPUT__RIGHT (1 << 4)
+#define KEYCNT_INPUT__LEFT  (1 << 5)
+#define KEYCNT_INPUT__UP    (1 << 6)
+#define KEYCNT_INPUT__DOWN  (1 << 7)
+#define KEYCNT_INPUT__L   (1 << 8)
+#define KEYCNT_INPUT__R   (1 << 9)
+#define KEYCNT__INT_AND (1 << 15)
 #define KEYCNT__INT_ENABLE (1 << 14)
 
 /* 15 Interrupt Control */

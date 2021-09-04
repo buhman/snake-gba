@@ -77,6 +77,24 @@ __get_next_head:
         add r4, r2, r3, LSL #5
         .endm
 
+        .global snake$update_dir
+snake$update_dir:
+        /* arg
+          r0 : grid base address (const)
+          r1 : input dir
+        */
+
+        mov r9, #(GRID_SIZE + 0)
+        add r9, r0, r9
+
+        ldr r8, [r9]   /* address <- address ptr */
+        ldrb r7, [r8]  /* value <- address */
+        mov r7, #TYPE_SNAKE
+        orr r7, r7, r1, LSL #2
+        strb r7, [r8]
+
+        bx lr
+
         .global snake$update
 snake$update:
         /* register allocation:
@@ -159,12 +177,11 @@ snake$update:
         ldrb r7, [r8]  /* value <- address */
         sub r6, r8, r0 /* offset <- */
 
-        /* r1 is the current tail's head */
-        mov r1, #DIR_NONE
-
         /* arg r0(grid base address), r1(dir), r6(offset) */
         /* clobber r1-r4 */
         /* return r1(next dir) r2(x), r3(y), r4(next head offset) */
+        /* NONE follows the tail forward to the next element */
+        mov r1, #DIR_NONE
         GET_NEXT_HEAD
 
         /* delete old tail */
